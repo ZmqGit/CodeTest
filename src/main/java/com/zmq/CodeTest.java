@@ -1,11 +1,5 @@
 package com.zmq;
 
-import com.sun.org.apache.regexp.internal.RE;
-
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class CodeTest {
 
     /**
@@ -28,27 +22,20 @@ public class CodeTest {
         }
         StringBuilder resultBuilder = new StringBuilder(str + " ");
         int length = resultBuilder.length();
-        C current = new C();
+        CurrentCharacter current = new CurrentCharacter();
         for (int i = 0; i < length; i++) {
             Character c = resultBuilder.charAt(i);
             if (current.c == c) {
                 current.num += 1;
+            } else if (current.num >= 3) {
+                resultBuilder.delete(i - current.num, i);
+                i = -1;
+                length = resultBuilder.length();
+                current.c = null;
+                current.num = 0;
             } else {
-                if (current.num >= 3) {
-                    resultBuilder.delete(i - current.num, i);
-                    if (resultBuilder.length() > 3) {
-                        //重置上下文
-                        i = -1;
-                        length = resultBuilder.length();
-                        current.c = null;
-                        current.num = 0;
-                    } else {
-                        return resultBuilder.toString().trim();
-                    }
-                } else {
-                    current.c = c;
-                    current.num = 1;
-                }
+                current.c = c;
+                current.num = 1;
             }
         }
         return resultBuilder.toString().trim();
@@ -69,37 +56,29 @@ public class CodeTest {
      * -> d
      */
     public static String solution2(String str) {
-        if (str == null || str.length() < 3){
+        if (str == null || str.length() < 3) {
             return str;
         }
-        StringBuilder resultBuilder = new StringBuilder(str+" ");
+        StringBuilder resultBuilder = new StringBuilder(str + " ");
         int length = resultBuilder.length();
-        C current = new C();
-        for (int i=0; i<length; i++){
+        CurrentCharacter current = new CurrentCharacter();
+        for (int i = 0; i < length; i++) {
             Character c = resultBuilder.charAt(i);
-            if (current.c == c){
+            if (current.c == c) {
                 current.num += 1;
-            }
-            else{
-                if (current.num>=3){
-                    if (current.c == 'a') {
-                        resultBuilder.delete(i - current.num, i);
-                    }else {
-                        resultBuilder.replace(i - current.num, i ,Character.toString((char)(current.c-1)));
-                    }
-                    if (resultBuilder.length()>3) {
-                        //重置上下文
-                        i = -1;
-                        length = resultBuilder.length();
-                        current.c = null;
-                        current.num = 0;
-                    }else {
-                        return resultBuilder.toString().trim();
-                    }
-                }else {
-                    current.c = c;
-                    current.num = 1;
+            } else if (current.num >= 3) {
+                if (current.c == 'a') {
+                    resultBuilder.delete(i - current.num, i);
+                } else {
+                    resultBuilder.replace(i - current.num, i, String.valueOf((char) (current.c - 1)));
                 }
+                i = -1;
+                length = resultBuilder.length();
+                current.c = null;
+                current.num = 0;
+            } else {
+                current.c = c;
+                current.num = 1;
             }
         }
         return resultBuilder.toString().trim();
